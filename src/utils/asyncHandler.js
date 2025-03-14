@@ -3,3 +3,6 @@ const asyncHandler = (requestHandler) => (req, res, next) => {
      
 }
 export{asyncHandler};
+
+// const asyncHandler = (fn) => () => {};
+// const asyncHandler = (fn) => (req, res, next) => {};
