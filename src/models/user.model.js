@@ -33,7 +33,7 @@ const userSchema = new Schema({
 
     },
     coverimage: {
-        type: String,
+        type: String,//cloudinary url
     },
     watchHistory: [{
         type: mongoose.Schema.Types.ObjectId,
