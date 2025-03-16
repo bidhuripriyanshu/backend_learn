@@ -24,6 +24,8 @@ const registerUser = asynHandler(async (req, res) => {
   // if(fullname ===""){
   //   throw new ApiError(400,"Fullname is required");
   // }
+
+
   if ([fullname, email, username, password].some((field) =>
 
     field?.trim() === "")
@@ -38,11 +40,18 @@ const registerUser = asynHandler(async (req, res) => {
   if(existedUser){
     throw new ApiError(400,"User already exists");
   }
+
+
+
  const avatarLocalPath = req.files?.avatar[0]?.path;
  const coverImageLocalPath =req.files?.coverimage[0]?.path;
+
  if(!avatarLocalPath){
    throw new ApiError(400,"Avatar is required");
  }
+
+
+
  //upload on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverimage = await uploadOnCloudinary(coverImageLocalPath);
@@ -58,16 +67,20 @@ const registerUser = asynHandler(async (req, res) => {
     avatar:avatar.url,
     coverimage:coverimage?.url || "",
   })
+
   const createdUser = await newUser.findById(user._id).select("-password -refreshToken");
-})
+
  if(!createdUser){
     throw new ApiError(500,"User creation failed");
  }
 
-
+ //response sending after created user successfully
 
  return res.status(201).json(
    new ApiResponse(200,createdUser,"User regitered successfully")
  )
- 
+
+})
+
+
 export { registerUser }; 
