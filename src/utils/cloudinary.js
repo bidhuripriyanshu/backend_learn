@@ -26,4 +26,5 @@ const uploadOnCloudinary = async(localFilePath)=>{
        // temporary file has been remove from localfiles
     }
 }   
-  
+
+export{uploadOnCloudinary}
