@@ -7,6 +7,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 
 
 const registerUser = asynHandler(async (req, res) => {
+
   //1.get user details from frontend
   //2. validation - not empty
   //3. check if user exists  :username,email
@@ -17,24 +18,28 @@ const registerUser = asynHandler(async (req, res) => {
   //7.check fro user creation
   //8.return response 
 
-  const { fullname, email, username, password } = req.body;
+  const { fullName, email, userName, password } = req.body;
   console.log("email: ", email);
   console.log("password:", password);
+  console.log("userName:", userName);
+  console.log("fullName:", fullName);
+  // console.log(" req.body: ", req.body);     
+
 
   // if(fullname ===""){
   //   throw new ApiError(400,"Fullname is required");
   // }
 
 
-  if ([fullname, email, username, password].some((field) =>
+  if ([fullName, email, userName, password].some((field) =>
 
     field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
- const existedUser = user.findOne({
-    $or: [{username},{email}]
+ const existedUser = await user.findOne({
+    $or: [{userName},{email}]
   })
 
   if(existedUser){
@@ -54,18 +59,19 @@ const registerUser = asynHandler(async (req, res) => {
 
  //upload on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  const coverimage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+ 
   if(!avatar){
-    throw new ApiError(500,"Avatar upload failed");
+    throw new ApiError(500,"Avatar file is required ");
   }
 
   const newUser = await user.create({
-    fullname,
+    fullName,
     email,
-    username:username.toLowerCase(),
+    userName:userName.toLowerCase(),
     password,
     avatar:avatar.url,
-    coverimage:coverimage?.url || "",
+    coverImage:coverImage?.url || "", 
   })
 
   const createdUser = await newUser.findById(user._id).select("-password -refreshToken");

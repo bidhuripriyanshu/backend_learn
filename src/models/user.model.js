@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 
 const userSchema = new mongoose.Schema({
-    username: {
+    userName: {
         type: String,
         required: true,
         unique: true,
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
 
     },
 
-    fullname: {
+    fullName: {
         type: String,
         required: true,
         trim: true,
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
 
 
     },
-    coverimage: {
+    coverImage: {
         type: String,//cloudinary url
     },
     watchHistory: [{
