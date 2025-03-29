@@ -6,21 +6,18 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 
 const generateAccessAndRefreshToken= async (userId) =>{
   try{
-     const User = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
-    const refereshToken = user.generateRefreshToken();
-     user.refereshToken = refereshToken;
+     const user = await User.findById(userId);
+     const accessToken = user.generateAccessToken();
+     const refreshToken = user.generateRefreshToken();
+     user.refreshToken = refreshToken;
      await user.save({validateBeforeSave: false});
-     
-     return {accessToken,refereshToken};
-
-
-
+     return {accessToken,refreshToken};
     } catch(error){
       throw new ApiError(500,"somethings went wrong while generating referesh and access token");
   }
      
 }
+
 
 
 const registerUser = asynHandler(async (req, res) => {
@@ -130,16 +127,19 @@ if(!user){
  if(!isPasswordValid){
     throw new ApiError(400,"Password is incorrect");
  }
- const {accessToken,refereshToken} = await generateAccessAndRefreshToken(user._id);
+ const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id);
 
-  const loggedInUser = await User.findById(user._id).
+ const loggedInUser = await User.findById(user._id).
   select( "-password -refreshToken")
   
+
+
   //Cookie
    const options ={
        httpOnly:true,
        secure:true,
    }
+
    return res.status(200).cookie("accessToken",accessToken,options).cookie(
        "refreshToken",refereshToken,options).json(
           new ApiResponse(
@@ -150,11 +150,26 @@ if(!user){
             "User logged in Successfully"
           )
        )
+  })
 
-})
+
 
 const logoutUser = asynHandler(async (req, res)=>{
-     
+      
+ await User.findByIdAndDelete(
+       req.user._id,
+       {
+          $set:{
+              refreshToken:undefined
+          }
+       },
+       {
+          new:true
+       }
+
+       
+
+       )   
 })
 
 
