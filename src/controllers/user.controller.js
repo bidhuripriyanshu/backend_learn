@@ -52,7 +52,7 @@ const registerUser = asynHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
- const existedUser = await user.findOne({
+ const existedUser = await User.findOne({
     $or: [{userName},{email}]
   })
 
@@ -169,9 +169,21 @@ const logoutUser = asynHandler(async (req, res)=>{
 
        
 
-       )   
+       ) 
+       
+       const options = {
+         httpOnly:true,
+         secure:true,
+       }
+       return res.status(200).
+       clearCookie("accessToken",options).
+       clearCookie("refreshToken",options)
+       .json(
+         new ApiResponse(200,"User logged out successfully")
+       )
+       
 })
 
 
 
-export { registerUser }; 
+export { registerUser,loginUser,logoutUser }; 
